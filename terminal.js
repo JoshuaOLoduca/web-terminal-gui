@@ -30,6 +30,7 @@ $(window).keyup((e) => {
   }
 });
 
+// check to see if user input char is allowed
 function isAlphaNumeric(key) {
   resetCursor();
   const keys =
@@ -59,11 +60,16 @@ function sendInput() {
 
 async function ctrlController(key) {
   // Manage ctrl command keys START
+  // If key isnt in current user command, run code
   if (!ctrlCommand.includes(key)) {
+    // add key to command group
     ctrlCommand.push(key);
+    // add a listener for that key using namespace to remove it latter
     $(window).on("keyup.ctrlController" + key, (e) => {
+      // on key up, remove key from command group
       const keyIndex = ctrlCommand.findIndex((elm) => elm === key);
       ctrlCommand.splice(keyIndex, 1);
+      // remove listener for key
       $(window).off(".ctrlController" + key);
     });
   }
@@ -73,6 +79,8 @@ async function ctrlController(key) {
 
   switch (command) {
     case "v":
+      // TODO: fix possible exploit
+      // ctrl V can be used to bypass isAlphanumeric check atm.
       input += await navigator.clipboard.readText();
       break;
 
