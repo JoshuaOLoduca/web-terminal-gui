@@ -27,7 +27,10 @@ $(window).keyup((e) => {
 });
 
 function isAlphaNumeric(key) {
-  const keys = "abcdefghijklmnopqrstuvwxyz1234567890 ".split("");
+  const keys =
+    'abcdefghijklmnopqrstuvwxyz1234567890 !@#$%^&*()_+"`~{}[]\\|:;<>,./?'.split(
+      ""
+    );
   return keys.includes(key.toLowerCase());
 }
 
