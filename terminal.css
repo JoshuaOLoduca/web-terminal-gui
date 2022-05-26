@@ -1,0 +1,52 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --terminal-background: rgb(0, 0, 0);
+    --terminal-color: #fff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --terminal-background: rgb(177, 177, 177);
+    --terminal-color: rgb(22, 22, 22);
+
+  }
+}
+
+body, html {
+  height: 100%;
+}
+
+body {
+  background-color: aquamarine;
+}
+
+#terminal__container {
+display: flex;
+
+  background-color: var(--terminal-background);
+  position: relative;
+  height: 100%;
+  color: var(--terminal-color);
+}
+
+.terminal__cursor {
+  /* font-size: 0px; */
+  background-color: green;
+  height: 2ch;
+  width: 1ch;
+  animation-name: cursor;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes cursor {
+  0% {opacity: .9;}
+  50% {opacity: 0.25;}
+  100% {opacity: .9;}
+}
