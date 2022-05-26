@@ -47,8 +47,7 @@ function resetCursorFactory() {
 
   return function resetCursor() {
     if (cursorAnimationTimeout) clearTimeout(cursorAnimationTimeout);
-    else cursor.style["animation-name"] = "none";
-
+    cursor.style["animation-name"] = "none";
     cursorAnimationTimeout = setTimeout(() => {
       cursor.style["animation-name"] = animationName;
     }, 500);
