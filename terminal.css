@@ -1,8 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-size: 40px;
+  font-family: 'Open Sans', sans-serif;
 }
 
 :root {
@@ -42,19 +45,23 @@ body {
 }
 
 .terminal__input-container {
+  position: relative;
   height: var(--cursor-height);
   display: flex;
+  flex-wrap: wrap;
 }
 
 #terminal__input {
   height: 100%;
   width: fit-content;
+  text-align: center;
 }
 
 .terminal__cursor {
   background-color: green;
   height: 100%;
   width: 1ch;
+  opacity: .9;
   animation-name: cursor;
   animation-duration: 1.5s;
   animation-iteration-count: infinite;
