@@ -14,6 +14,7 @@ const specialKeys = {
 };
 
 $(window).keydown(async (e) => {
+  resetCursor();
   const { key } = e;
   if (specialKeys[key] && !ctrlMod) specialKeys[key]();
   else if (ctrlMod) await ctrlController(key);
@@ -32,7 +33,6 @@ $(window).keyup((e) => {
 
 // check to see if user input char is allowed
 function isAlphaNumeric(key) {
-  resetCursor();
   const keys =
     'abcdefghijklmnopqrstuvwxyz1234567890 !@#$%^&*()_+"`~{}[]\\|:;<>,./?'.split(
       ""
