@@ -1,12 +1,16 @@
 const terminal = $("#terminal__input");
+const cursor = $("#cursor")[0];
 
 let input = "";
 let ctrlMod = false;
 let ctrlCommand = [];
 
+const resetCursor = resetCursorFactory();
+
 const specialKeys = {
   Control: () => (ctrlMod = true),
   Backspace: () => (input = input.split("").slice(0, -1).join("")),
+  Enter: () => sendInput(),
 };
 
 $(window).keydown(async (e) => {
@@ -27,6 +31,7 @@ $(window).keyup((e) => {
 });
 
 function isAlphaNumeric(key) {
+  resetCursor();
   const keys =
     'abcdefghijklmnopqrstuvwxyz1234567890 !@#$%^&*()_+"`~{}[]\\|:;<>,./?'.split(
       ""
@@ -34,9 +39,25 @@ function isAlphaNumeric(key) {
   return keys.includes(key.toLowerCase());
 }
 
-async function ctrlController(key) {
-  key = key.toLowerCase();
+// Using closures to reliable reset animation back to original
+function resetCursorFactory() {
+  let cursorAnimationTimeout;
+  const animationName = cursor.style["animation-name"];
 
+  return function resetCursor() {
+    if (cursorAnimationTimeout) clearTimeout(cursorAnimationTimeout);
+    else cursor.style["animation-name"] = "none";
+
+    cursorAnimationTimeout = setTimeout(() => {
+      cursor.style["animation-name"] = animationName;
+    }, 500);
+  };
+}
+function sendInput() {
+  input = "";
+}
+
+async function ctrlController(key) {
   // Manage ctrl command keys START
   if (!ctrlCommand.includes(key)) {
     ctrlCommand.push(key);
@@ -50,15 +71,26 @@ async function ctrlController(key) {
 
   const command = ctrlCommand.join("");
 
-  if (command === "v") {
-    input += await navigator.clipboard.readText();
-  } else if (command === "backspace") {
-    const inputArr = input.split(" ");
-    console.log(input.split(" ").slice(0, -1));
-    input = (
-      inputArr[inputArr.length - 1] === ""
-        ? inputArr.slice(0, -2)
-        : inputArr.slice(0, -1)
-    ).join(" ");
+  switch (command) {
+    case "v":
+      input += await navigator.clipboard.readText();
+      break;
+
+    case "Backspace":
+      const inputArr = input.split(" ");
+      // gets the first index of trailing whitespace from input
+      const toRemove = (() => {
+        let count = 0;
+        for (let i = inputArr.length - 1; i >= 0; i--) {
+          const elm = inputArr[i];
+          if (elm === "") count--;
+          else break;
+        }
+        return count;
+      })();
+
+      // remove trailing whitespace plus newest word
+      input = inputArr.slice(0, toRemove - 1).join(" ");
+      break;
   }
 }
