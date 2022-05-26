@@ -2,6 +2,11 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-size: 40px;
+}
+
+:root {
+  --cursor-height: 2ch;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -10,6 +15,7 @@
     --terminal-color: #fff;
   }
 }
+
 @media (prefers-color-scheme: light) {
   :root {
     --terminal-background: rgb(177, 177, 177);
@@ -27,7 +33,7 @@ body {
 }
 
 #terminal__container {
-display: flex;
+  display: flex;
 
   background-color: var(--terminal-background);
   position: relative;
@@ -35,18 +41,41 @@ display: flex;
   color: var(--terminal-color);
 }
 
+.terminal__input-container {
+  height: var(--cursor-height);
+  display: flex;
+}
+
+#terminal__input {
+  height: 100%;
+  width: fit-content;
+}
+
 .terminal__cursor {
-  /* font-size: 0px; */
   background-color: green;
-  height: 2ch;
+  height: 100%;
   width: 1ch;
   animation-name: cursor;
-  animation-duration: 2s;
+  animation-duration: 1.5s;
   animation-iteration-count: infinite;
 }
 
 @keyframes cursor {
-  0% {opacity: .9;}
-  50% {opacity: 0.25;}
-  100% {opacity: .9;}
+  0% {
+    height: var(--cursor-height);
+  }
+
+  35% {
+    margin: calc(var(--cursor-height) / 2) 0;
+    height: 0ch;
+  }
+
+  65% {
+    margin: calc(var(--cursor-height) / 2) 0;
+    height: 0ch;
+  }
+
+  100% {
+    height: var(--cursor-height);
+  }
 }
