@@ -14,7 +14,8 @@ $(window).keydown(async (e) => {
   if (specialKeys[key] && !ctrlMod) specialKeys[key]();
   else if (ctrlMod) await ctrlController(key);
   else if (isAlphaNumeric(key)) input += key;
-  terminal.text(input);
+
+  terminal.text() !== input && terminal.text(input);
 });
 
 $(window).keyup((e) => {
@@ -32,11 +33,23 @@ function isAlphaNumeric(key) {
 
 async function ctrlController(key) {
   key = key.toLowerCase();
-  if (!ctrlCommand.includes(key)) ctrlCommand.push(key);
 
-  if (ctrlCommand.includes("v")) {
+  // Manage ctrl command keys START
+  if (!ctrlCommand.includes(key)) {
+    ctrlCommand.push(key);
+    $(window).on("keyup.ctrlController" + key, (e) => {
+      const keyIndex = ctrlCommand.findIndex((elm) => elm === key);
+      ctrlCommand.splice(keyIndex, 1);
+      $(window).off(".ctrlController" + key);
+    });
+  }
+  // Manage ctrl command keys END
+
+  const command = ctrlCommand.join("");
+
+  if (command === "v") {
     input += await navigator.clipboard.readText();
-  } else if (ctrlCommand.includes("backspace")) {
+  } else if (command === "backspace") {
     const inputArr = input.split(" ");
     console.log(input.split(" ").slice(0, -1));
     input = (
@@ -44,6 +57,5 @@ async function ctrlController(key) {
         ? inputArr.slice(0, -2)
         : inputArr.slice(0, -1)
     ).join(" ");
-    console.log(input, "ctrl backspace");
   }
 }
