@@ -1,5 +1,6 @@
 const terminal = $("#terminal__input");
 const cursor = $("#cursor")[0];
+const screen = $("#terminal__screen");
 
 let input = "";
 let ctrlMod = false;
@@ -7,29 +8,38 @@ let ctrlCommand = [];
 
 const resetCursor = resetCursorFactory();
 
+const commands = {
+  calc: (input) => input,
+  help: () => Object.keys(commands),
+};
+
 const specialKeys = {
   Control: () => (ctrlMod = true),
   Backspace: () => (input = input.split("").slice(0, -1).join("")),
   Enter: () => sendInput(),
 };
 
-$(window).keydown(async (e) => {
-  resetCursor();
-  const { key } = e;
-  if (specialKeys[key] && !ctrlMod) specialKeys[key]();
-  else if (ctrlMod) await ctrlController(key);
-  else if (isAlphaNumeric(key)) input += key;
+registerTerminalListeners();
 
-  terminal.text() !== input && terminal.text(input);
-});
+function registerTerminalListeners() {
+  $(window).keydown(async (e) => {
+    resetCursor();
+    const { key } = e;
+    if (specialKeys[key] && !ctrlMod) specialKeys[key]();
+    else if (ctrlMod) await ctrlController(key);
+    else if (isAlphaNumeric(key)) input += key;
 
-$(window).keyup((e) => {
-  const { key } = e;
-  if (key === "Control") {
-    ctrlMod = false;
-    ctrlCommand = [];
-  }
-});
+    terminal.text() !== input && terminal.text(input);
+  });
+
+  $(window).keyup((e) => {
+    const { key } = e;
+    if (key === "Control") {
+      ctrlMod = false;
+      ctrlCommand = [];
+    }
+  });
+}
 
 // check to see if user input char is allowed
 function isAlphaNumeric(key) {
@@ -53,8 +63,18 @@ function resetCursorFactory() {
     }, 500);
   };
 }
+
 function sendInput() {
+  const inputArr = input.split(" ");
+  const prog = inputArr[0];
+  const arguments = inputArr.slice(1);
+  writeToElement(screen, input);
+  if (commands[prog]) writeToElement(screen, commands[prog](arguments));
   input = "";
+}
+
+function writeToElement(elm, text) {
+  $(elm).append(`<p>${text}</p>`);
 }
 
 async function ctrlController(key) {
@@ -64,12 +84,12 @@ async function ctrlController(key) {
     // add key to command group
     ctrlCommand.push(key);
     // add a listener for that key using namespace to remove it latter
-    $(window).on("keyup.ctrlController" + key, (e) => {
+    $(window).on("keyup.ctrlController" + key.toLowerCase(), (e) => {
       // on key up, remove key from command group
       const keyIndex = ctrlCommand.findIndex((elm) => elm === key);
       ctrlCommand.splice(keyIndex, 1);
       // remove listener for key
-      $(window).off(".ctrlController" + key);
+      $(window).off(".ctrlController" + key.toLowerCase());
     });
   }
   // Manage ctrl command keys END

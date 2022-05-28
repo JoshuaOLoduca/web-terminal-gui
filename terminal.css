@@ -37,6 +37,8 @@ body {
 
 #terminal__container {
   display: flex;
+  flex-direction: column;
+  padding-left: 1vw;
 
   background-color: var(--terminal-background);
   position: relative;
@@ -56,6 +58,10 @@ body {
   width: fit-content;
   text-align: center;
   white-space: pre-wrap;
+}
+
+#terminal__input::before {
+  content: "> ";
 }
 
 .terminal__cursor {
