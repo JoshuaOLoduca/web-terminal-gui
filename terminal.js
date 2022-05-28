@@ -78,9 +78,14 @@ function sendInput() {
   const inputArr = input.split(" ");
   const prog = inputArr[0];
   const myArgs = inputArr.slice(1);
-  writeToElement(screen, input);
-  if (commands[prog]) writeToElement(screen, commands[prog](myArgs));
+  writeToScreen(input);
+  if (commands[prog]) writeToScreen(commands[prog](myArgs));
   input = "";
+}
+
+function writeToScreen(text) {
+  writeToElement(screen, text);
+  $(screen)[0].scrollTop = $(screen)[0].scrollHeight;
 }
 
 function writeToElement(elm, text) {
