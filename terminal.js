@@ -1,6 +1,7 @@
 const terminal = $("#terminal__input");
 const cursor = $("#cursor")[0];
 const screen = $("#terminal__screen");
+const calc = new Calculator();
 
 let input = "";
 let ctrlMod = false;
@@ -9,7 +10,11 @@ let ctrlCommand = [];
 const resetCursor = resetCursorFactory();
 
 const commands = {
-  calc: (input) => input,
+  calc: (input) => {
+    calc.input = input;
+    console.log(calc.result);
+    return calc.result;
+  },
   help: () => Object.keys(commands),
 };
 
@@ -67,9 +72,9 @@ function resetCursorFactory() {
 function sendInput() {
   const inputArr = input.split(" ");
   const prog = inputArr[0];
-  const arguments = inputArr.slice(1);
+  const myArgs = inputArr.slice(1);
   writeToElement(screen, input);
-  if (commands[prog]) writeToElement(screen, commands[prog](arguments));
+  if (commands[prog]) writeToElement(screen, commands[prog](myArgs));
   input = "";
 }
 
