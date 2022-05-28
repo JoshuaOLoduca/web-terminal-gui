@@ -10,12 +10,18 @@ let ctrlCommand = [];
 const resetCursor = resetCursorFactory();
 
 const commands = {
-  calc: (input) => {
-    calc.input = input;
-    return calc.result();
-  },
-  help: () => Object.keys(commands),
+  calc: (input) => calc.calculate(input),
+  help: () =>
+    commandSummary.reduce(
+      (prev, curr) => (prev += `${prev && "<br />"}${curr[0]}: ${curr[1]}`),
+      ""
+    ),
 };
+
+const commandSummary = [
+  ["calc", "CLI Calculator. supports + - / *. IE: calc 1+1, calc 2 * 3 / 1"],
+  ["help", "shows this menu"],
+];
 
 const specialKeys = {
   Control: () => (ctrlMod = true),

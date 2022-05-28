@@ -12,9 +12,7 @@ class Calculator {
   }
 
   set input(value) {
-    console.log(value);
     if (Array.isArray(value)) value = value.join(" ");
-    console.log(value);
 
     // remove all whitespace
     value = value.replace(/\s+/g, "");
@@ -26,7 +24,6 @@ class Calculator {
     }
 
     this._input = value.split(/\s+/);
-    console.log(this._input);
   }
 
   get input() {
@@ -34,6 +31,7 @@ class Calculator {
   }
 
   result() {
+    if (this._input.length === 1) return this._input[0];
     const pemdas = ["*", "/", "+", "-"];
     let performOperator = false;
     for (const operator of pemdas) {
@@ -55,7 +53,7 @@ class Calculator {
         performOperator = false;
       }
     }
-    return this._input;
+    return this._input[0];
   }
 
   calculate(value) {
