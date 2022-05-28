@@ -31,6 +31,7 @@ class Calculator {
     // Create regex and replace string for all operators that are followed by -
     const regexForNegatives = [];
     Object.keys(this.operators).forEach((operator) => {
+      if (operator === ")") return;
       // Double space because of the regex that adds whitespace
       regexForNegatives.push([
         new RegExp(`\\${operator}  \\- `, "g"),
