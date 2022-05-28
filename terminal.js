@@ -83,6 +83,7 @@ function sendInput() {
   const myArgs = inputArr.slice(1);
   writeToScreen(input);
   if (commands[prog]) writeToScreen(commands[prog](myArgs));
+  else writeToScreen('Type "help" to list commands');
   input = "";
 }
 
