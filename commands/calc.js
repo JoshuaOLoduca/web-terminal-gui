@@ -25,7 +25,32 @@ class Calculator {
       value = value.replace(regex, ` ${operator} `);
     }
 
-    this._input = value.trim().split(/\s+/);
+    // set all negative symbols for numbers to be directly beside their number
+    // If a minus is after an operator, we will assume it negates the number to its right.
+
+    // Create regex and replace string for all operators that are followed by -
+    const regexForNegatives = [];
+    Object.keys(this.operators).forEach((operator) => {
+      // Double space because of the regex that adds whitespace
+      regexForNegatives.push([
+        new RegExp(`\\${operator}  \\- `, "g"),
+        `${operator} -`,
+      ]);
+    });
+
+    // Execute each regex on value string
+    regexForNegatives.forEach((regElm) => {
+      value = value.replace(regElm[0], regElm[1]);
+    });
+
+    // Trim and split value by space
+    value = value.trim().split(/\s+/);
+
+    // If the first index elm is a minus, combine it with the element on its right.
+    if (isNaN(Number(value[0])) && value[0] === "-")
+      value.splice(0, 2, value[0] + value[1]);
+
+    this._input = value;
   }
 
   get input() {
@@ -49,6 +74,9 @@ class Calculator {
       // If we found a closing parenthesis and there are no opening parenthesis in the stack, return error message
       if (stack.length === 0) return "Missing Parenthesis";
 
+      // Show Array before Mutation
+      console.log(this._input);
+
       // Get index of opening parenthesis
       // (i is index of closing parenthesis)
       // and remove it from the stack
@@ -58,10 +86,13 @@ class Calculator {
       const sum = this.calculateArray(this._input.slice(start + 1, i));
 
       // Remove parenthesis group and add in the sum of its contents
-      this._input.splice(start, i + 1, sum);
+      this._input.splice(start, i - start + 1, sum);
 
       // Move i back to where parenthesis group started
       i = start;
+
+      // Show Array After Mutation
+      console.log(this._input);
     }
 
     // If there are opening parenthesis in the stack, return error
@@ -92,6 +123,9 @@ class Calculator {
         // If we found a number, but havent found the operation to perform on it, skip loop.
         if (!performOperator) continue;
 
+        // Show Array before Mutation
+        console.log(arr);
+
         const num1 = Number(arr[i - 2]);
         const num2 = Number(char);
 
@@ -108,6 +142,9 @@ class Calculator {
 
         // reset operator tracker
         performOperator = false;
+
+        // Show Array After Mutation
+        console.log(arr);
       }
     }
 
