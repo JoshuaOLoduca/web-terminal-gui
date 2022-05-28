@@ -1,6 +1,5 @@
 class Calculator {
   constructor() {
-    this.input = "";
     this._input = [];
 
     this.operators = {
@@ -8,6 +7,7 @@ class Calculator {
       "-": this.subtract,
       "/": this.divide,
       "*": this.multiply,
+      "^": this.exponential,
     };
   }
 
@@ -32,23 +32,26 @@ class Calculator {
 
   result() {
     if (this._input.length === 1) return this._input[0];
-    const pemdas = ["*", "/", "+", "-"];
+    const pemdas = ["^", ["*", "/"], ["+", "-"]];
     let performOperator = false;
     for (const operator of pemdas) {
-      for (let i = this._input.length - 1; i >= 0; i--) {
+      for (let i = 0; i < this._input.length; i++) {
         const char = this._input[i];
-        if (char === operator) {
-          performOperator = true;
+        if (operator.includes(char)) {
+          performOperator = char;
           continue;
         }
         if (!performOperator) continue;
 
-        const num1 = Number(char);
-        const num2 = Number(this._input[i + 2]);
+        const num2 = Number(char);
+        const num1 = Number(this._input[i - 2]);
+        console.log(this._input);
 
-        this._input[i + 1] = this.operators[operator](num1, num2);
-        this._input.splice(i + 2, 1);
+        this._input[i - 1] = this.operators[performOperator](num1, num2);
         this._input.splice(i, 1);
+        this._input.splice(i - 2, 1);
+        i -= 2;
+        console.log(this._input);
 
         performOperator = false;
       }
@@ -75,5 +78,9 @@ class Calculator {
 
   multiply(num1, num2) {
     return num1 * num2;
+  }
+
+  exponential(num1, num2) {
+    return Math.pow(num1, num2);
   }
 }

@@ -54,7 +54,7 @@ function registerTerminalListeners() {
 // check to see if user input char is allowed
 function isAlphaNumeric(key) {
   const keys =
-    'abcdefghijklmnopqrstuvwxyz1234567890 !@#$%^&*()_+"`~{}[]\\|:;<>,./?'.split(
+    'abcdefghijklmnopqrstuvwxyz1234567890 !@#$%^&*()_+"`~{}[]\\|:;<>,./?-'.split(
       ""
     );
   return keys.includes(key.toLowerCase());
