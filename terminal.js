@@ -19,7 +19,10 @@ const commands = {
 };
 
 const commandSummary = [
-  ["calc", "CLI Calculator. supports + - / *. IE: calc 1+1, calc 2 * 3 / 1"],
+  [
+    "calc",
+    "CLI Calculator. supports + - / * ^ and (). IE: calc 1+1, calc 2 * 3 / 1",
+  ],
   ["help", "shows this menu"],
 ];
 
