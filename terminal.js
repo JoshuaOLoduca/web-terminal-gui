@@ -12,8 +12,7 @@ const resetCursor = resetCursorFactory();
 const commands = {
   calc: (input) => {
     calc.input = input;
-    console.log(calc.result);
-    return calc.result;
+    return calc.result();
   },
   help: () => Object.keys(commands),
 };
