@@ -6,6 +6,7 @@ const calc = new Calculator();
 let input = "";
 let ctrlMod = false;
 let ctrlCommand = [];
+let disableInput = false;
 
 const resetCursor = resetCursorFactory();
 
@@ -16,7 +17,17 @@ const commands = {
       (prev, curr) => (prev += `${prev && "<br />"}${curr[0]}: ${curr[1]}`),
       ""
     ),
+  pong: () => renderFullscreenApp("pong"),
 };
+
+function renderFullscreenApp(app) {
+  disableInput = true;
+  $(document.body).prepend(
+    $.parseHTML(
+      `<object type="text/html" id="pong_table" class="main_screen" data="${app}.html" />`
+    )
+  );
+}
 
 const commandSummary = [
   [
@@ -32,15 +43,20 @@ const specialKeys = {
   Enter: () => sendInput(),
 };
 
+function fireSpecialKey(key) {
+  if (disableInput && key !== "Control") return;
+  specialKeys[key]();
+}
+
 registerTerminalListeners();
 
 function registerTerminalListeners() {
   $(window).keydown(async (e) => {
     resetCursor();
     const { key } = e;
-    if (specialKeys[key] && !ctrlMod) specialKeys[key]();
+    if (specialKeys[key] && !ctrlMod) fireSpecialKey(key);
     else if (ctrlMod) await ctrlController(key);
-    else if (isAlphaNumeric(key)) input += key;
+    else if (isAlphaNumeric(key) && !disableInput) input += key;
 
     terminal.text() !== input && terminal.text(input);
   });
@@ -117,9 +133,19 @@ async function ctrlController(key) {
 
   switch (command) {
     case "v":
+      if (disableInput) return;
       // TODO: fix possible exploit
       // ctrl V can be used to bypass isAlphanumeric check atm.
       input += await navigator.clipboard.readText();
+      break;
+
+    case "x":
+      $(".main_screen").remove();
+      disableInput = false;
+      break;
+
+    case "y":
+      console.log("test");
       break;
 
     case "Backspace":
