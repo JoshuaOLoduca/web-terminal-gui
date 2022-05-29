@@ -1,0 +1,80 @@
+#pong__container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  padding: 0 2%;
+}
+
+#pong__table {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+#pong__scoreboard {
+  content: "";
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+#pong__scoreboard>* {
+  flex-grow: 1;
+  flex-basis: 0;
+  padding: 0 2%;
+  margin: 0 1%;
+}
+
+#pong__scoreboard> :first-child {
+  text-align: right;
+}
+
+#pong__scoreboard__left {}
+
+#pong__scoreboard__right {}
+
+#pong__ball {
+  --top-position: 50%;
+  --left-position: 50%;
+
+  position: absolute;
+  top: var(--top-position);
+  left: var(--left-position);
+  transform: translate(-50%, -50%);
+  width: 10vh;
+  height: 10vh;
+
+  border-radius: 50%;
+
+  background-color: azure;
+}
+
+.pong__paddle {
+  position: absolute;
+  width: 5vh;
+  height: 25vh;
+  background-color: azure;
+}
+
+#pong__left {
+  --top-position: 50%;
+
+  top: var(--top-position);
+  transform: translateY(-50%);
+  left: 0;
+}
+
+#pong__right {
+  --top-position: 50%;
+
+  top: var(--top-position);
+  transform: translateY(-50%);
+  right: 0;
+}
+
+#pong_remove {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
