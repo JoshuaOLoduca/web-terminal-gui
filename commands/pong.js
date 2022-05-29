@@ -1,5 +1,11 @@
 class Pong {
   constructor() {}
 
-  render(element) {}
+  render(element) {
+    $(element).html(
+      `
+      <div>hi bitch</div>
+      `
+    );
+  }
 }

@@ -62,11 +62,12 @@
   overflow: auto;
 }
 
-.main_screen {
+.focused_screen {
   position: fixed;
   z-index: 100;
-  /* width: 100%;
-  height: 100%; */
+  width: 100%;
+  height: 100%;
+  background-color: blueviolet;
 }
 
 @keyframes cursor {

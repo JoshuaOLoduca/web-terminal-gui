@@ -2,6 +2,7 @@ const terminal = $("#terminal__input");
 const cursor = $("#cursor")[0];
 const screen = $("#terminal__screen");
 const calc = new Calculator();
+const pong = new Pong();
 
 let input = "";
 let ctrlMod = false;
@@ -17,18 +18,18 @@ const commands = {
       (prev, curr) => (prev += `${prev && "<br />"}${curr[0]}: ${curr[1]}`),
       ""
     ),
-  pong: () => renderFullscreenApp("pong"),
+  pong: () => renderFullscreenApp("pong", pong.render),
 };
 
 function renderFullscreenApp(appName, appRenderCb) {
   disableInput = true;
-  $(document.body).prepend(
-    $.parseHTML(
-      `<div id="${appName}_fullscreen" class="focused_screen" data="${appName}.html" />`
+  $(document.body)
+    .prepend(
+      $.parseHTML(`<div id="${appName}_fullscreen" class="focused_screen" />`)
     )
-  );
-
-  appRenderCb($(`#${appName}_fullscreen`));
+    .ready(() => {
+      appRenderCb($(`#${appName}_fullscreen`));
+    });
 }
 
 const commandSummary = [
@@ -142,7 +143,7 @@ async function ctrlController(key) {
       break;
 
     case "x":
-      $(".main_screen").remove();
+      $(".focused_screen").remove();
       disableInput = false;
       break;
 
