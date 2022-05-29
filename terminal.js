@@ -20,13 +20,15 @@ const commands = {
   pong: () => renderFullscreenApp("pong"),
 };
 
-function renderFullscreenApp(app) {
+function renderFullscreenApp(appName, appRenderCb) {
   disableInput = true;
   $(document.body).prepend(
     $.parseHTML(
-      `<object type="text/html" id="pong_table" class="main_screen" data="${app}.html" />`
+      `<div id="${appName}_fullscreen" class="focused_screen" data="${appName}.html" />`
     )
   );
+
+  appRenderCb($(`#${appName}_fullscreen`));
 }
 
 const commandSummary = [
