@@ -29,17 +29,17 @@
   text-align: right;
 }
 
-#pong__scoreboard__left {}
+/* #pong__scoreboard__left {} */
 
-#pong__scoreboard__right {}
+/* #pong__scoreboard__right {} */
 
 #pong__ball {
-  --top-position: 50%;
-  --left-position: 50%;
+  --y: 50%;
+  --x: 50%;
 
   position: absolute;
-  top: var(--top-position);
-  left: var(--left-position);
+  top: var(--y);
+  left: var(--x);
   transform: translate(-50%, -50%);
   width: 10vh;
   height: 10vh;
@@ -57,17 +57,17 @@
 }
 
 #pong__left {
-  --top-position: 50%;
+  --y: 50%;
 
-  top: var(--top-position);
+  top: var(--y);
   transform: translateY(-50%);
   left: 0;
 }
 
 #pong__right {
-  --top-position: 50%;
+  --y: 50%;
 
-  top: var(--top-position);
+  top: var(--y);
   transform: translateY(-50%);
   right: 0;
 }

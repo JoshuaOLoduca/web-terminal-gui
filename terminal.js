@@ -18,7 +18,7 @@ const commands = {
       (prev, curr) => (prev += `${prev && "<br />"}${curr[0]}: ${curr[1]}`),
       ""
     ),
-  pong: () => renderFullscreenApp("pong", pong.render),
+  pong: () => renderFullscreenApp("pong", pong.render.bind(pong)),
 };
 
 function renderFullscreenApp(appName, appRenderCb) {
@@ -27,7 +27,7 @@ function renderFullscreenApp(appName, appRenderCb) {
     .prepend(
       $.parseHTML(`<div id="${appName}_fullscreen" class="focused_screen" />`)
     )
-    .ready(() => {
+    .ready(function () {
       appRenderCb($(`#${appName}_fullscreen`), () => (disableInput = false));
     });
 
