@@ -28,16 +28,25 @@ function renderFullscreenApp(appName, appRenderCb) {
       $.parseHTML(`<div id="${appName}_fullscreen" class="focused_screen" />`)
     )
     .ready(() => {
-      appRenderCb($(`#${appName}_fullscreen`));
+      appRenderCb($(`#${appName}_fullscreen`), () => (disableInput = false));
     });
+
+  return `Launching ${appName}`;
 }
 
 const commandSummary = [
   [
     "calc",
-    "CLI Calculator. supports + - / * ^ and (). IE: calc 1+1, calc 2 * 3 / 1",
+    `CLI Calculator. supports + - / * ^ and ().
+    <br/ >&nbsp; &nbsp; IE:
+    <ul class='terminal__help__list'>
+    <li>calc 2 * 3 / 1 + -1</li>
+    <li>calc (22/2-2*5)^2+(4-6/6)^2</li>
+    </ul>
+    &nbsp; &nbsp; Prints proof to console`,
   ],
   ["help", "shows this menu"],
+  ["pong", "play with some paddles"],
 ];
 
 const specialKeys = {

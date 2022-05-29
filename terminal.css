@@ -70,6 +70,10 @@
   background-color: blueviolet;
 }
 
+.terminal__help__list {
+  padding-left: 6vw;
+}
+
 @keyframes cursor {
   0% {
     height: var(--cursor-height);
