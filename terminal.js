@@ -2,7 +2,6 @@ const terminal = $("#terminal__input");
 const cursor = $("#cursor")[0];
 const screen = $("#terminal__screen");
 const calc = new Calculator();
-const pong = new Pong();
 
 let input = "";
 let ctrlMod = false;
@@ -18,7 +17,11 @@ const commands = {
       (prev, curr) => (prev += `${prev && "<br />"}${curr[0]}: ${curr[1]}`),
       ""
     ),
-  pong: () => renderFullscreenApp("pong", pong.render.bind(pong)),
+  pong: () =>
+    renderFullscreenApp("pong", (...myArgs) => {
+      const pong = new Pong();
+      pong.render(...myArgs);
+    }),
 };
 
 function renderFullscreenApp(appName, appRenderCb) {

@@ -5,6 +5,8 @@ class Pong {
     this._lastTick = 0;
     this._exit = false;
     this.containerElement;
+
+    this.cleanupCbs = [];
   }
 
   render(element, cleanupCb) {
@@ -54,12 +56,16 @@ class Pong {
     );
     console.log(this);
 
+    // register player controller
+    this.cleanupCbs.push(new PlayerController("itsamee"));
+
     this.tick(0);
   }
 
   tick(delta) {
     if (this._exit || $("#" + this.containerElement[0].id).length === 0) {
       this._exit = false;
+      this.cleanupCbs.forEach((cb) => cb());
       return;
     }
 
@@ -81,8 +87,42 @@ class PongPaddle {
     };
   }
 
-  #moveUp(delta) {
-    console.log(...arguments);
-  }
+  #moveUp(delta) {}
   #moveDown(delta) {}
+}
+
+class PlayerController {
+  constructor(
+    playerName,
+    controlsObj = {
+      up: "w",
+      down: "s",
+      left: "a",
+      right: "d",
+    }
+  ) {
+    this.player = playerName;
+    this.upKey = controlsObj.up.toLowerCase();
+    this.downKey = controlsObj.down.toLowerCase();
+    this.leftKey = controlsObj.left.toLowerCase();
+    this.rightKey = controlsObj.right.toLowerCase();
+
+    this.nameSpace = "playerController" + playerName;
+    this.registerListener();
+
+    return () => this.cleanup();
+  }
+
+  registerListener() {
+    console.log("hi");
+    $(window).on("keydown." + this.nameSpace, async (e) => {
+      const { key } = e;
+      console.log(key);
+    });
+  }
+
+  cleanup() {
+    console.log("cleaning up", this.player, "paddle controls");
+    $(window).off("." + this.nameSpace);
+  }
 }
