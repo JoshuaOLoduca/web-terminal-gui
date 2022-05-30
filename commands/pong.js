@@ -1,34 +1,10 @@
 class Pong {
   constructor() {
-    this._leftPaddle = { pos: { y: 0 } };
-    this._rightPaddle = { pos: { y: 0 } };
+    this.leftPaddle;
+    this.rightPaddle;
     this._lastTick = 0;
     this._exit = false;
     this.containerElement;
-  }
-
-  set lastTick(number) {
-    this._lastTick = number;
-  }
-
-  get lastTick() {
-    return this._lastTick;
-  }
-
-  set leftPaddle(object) {
-    this._leftPaddle = object;
-  }
-
-  get leftPaddle() {
-    return this._leftPaddle;
-  }
-
-  set rightPaddle(object) {
-    this._rightPaddle = object;
-  }
-
-  get rightPaddle() {
-    return this._rightPaddle;
   }
 
   render(element, cleanupCb) {
@@ -59,20 +35,23 @@ class Pong {
   }
 
   initialize() {
-    this.leftPaddle = {
-      pos: {
+    this.leftPaddle = new PongPaddle(
+      {
         y: window
           .getComputedStyle(document.getElementById("pong__left"))
           .getPropertyValue("--y"),
       },
-    };
-    this.rightPaddle = {
-      pos: {
+      document.getElementById("pong__left")
+    );
+
+    this.rightPaddle = new PongPaddle(
+      {
         y: window
           .getComputedStyle(document.getElementById("pong__right"))
           .getPropertyValue("--y"),
       },
-    };
+      document.getElementById("pong__right")
+    );
     console.log(this);
 
     this.tick(0);
@@ -85,8 +64,25 @@ class Pong {
     }
 
     window.requestAnimationFrame((time) => {
-      this.tick.call(this, time - this.lastTick);
+      this.tick(time - this.lastTick);
       this.lastTick = time;
     });
   }
+}
+
+class PongPaddle {
+  constructor(pos, elm, speed = 1) {
+    this._pos = pos;
+    this._element = elm;
+    this.speed = speed;
+    this.move = {
+      up: (...theArgs) => this.#moveUp(...theArgs),
+      down: (...theArgs) => this.#moveDown(...theArgs),
+    };
+  }
+
+  #moveUp(delta) {
+    console.log(...arguments);
+  }
+  #moveDown(delta) {}
 }
