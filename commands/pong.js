@@ -57,7 +57,12 @@ class Pong {
     console.log(this);
 
     // register player controller
-    this.cleanupCbs.push(new PlayerController("itsamee"));
+    this.cleanupCbs.push(
+      new PlayerInputController("itsamee", {
+        w: () => this.leftPaddle.move.up("hiitme"),
+        s: () => this.leftPaddle.move.down("hiitme"),
+      })
+    );
 
     this.tick(0);
   }
@@ -88,26 +93,33 @@ class PongPaddle {
   }
 
   #moveUp(delta) {}
-  #moveDown(delta) {}
+  #moveDown(delta) {
+    console.log(delta);
+  }
 }
 
-class PlayerController {
+class PlayerInputController {
   constructor(
     playerName,
     controlsObj = {
-      up: "w",
-      down: "s",
-      left: "a",
-      right: "d",
+      w: () => {
+        console.log(this.player, "w");
+      },
+      s: () => {
+        console.log(this.player, "s");
+      },
+      a: () => {
+        console.log(this.player, "a");
+      },
+      d: () => {
+        console.log(this.player, "d");
+      },
     }
   ) {
     this.player = playerName;
-    this.upKey = controlsObj.up.toLowerCase();
-    this.downKey = controlsObj.down.toLowerCase();
-    this.leftKey = controlsObj.left.toLowerCase();
-    this.rightKey = controlsObj.right.toLowerCase();
+    this.controlsCbs = controlsObj;
 
-    this.nameSpace = "playerController" + playerName;
+    this.nameSpace = "PlayerInputController" + playerName;
     this.registerListener();
 
     return () => this.cleanup();
@@ -117,7 +129,7 @@ class PlayerController {
     console.log("hi");
     $(window).on("keydown." + this.nameSpace, async (e) => {
       const { key } = e;
-      console.log(key);
+      if (this.controlsCbs[key]) this.controlsCbs?.[key]();
     });
   }
 
