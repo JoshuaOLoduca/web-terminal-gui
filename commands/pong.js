@@ -2,9 +2,11 @@ class Pong {
   constructor() {
     this.leftPaddle;
     this.rightPaddle;
-    this._lastTick = 0;
+    this._lastTick;
     this._exit = false;
     this.containerElement;
+
+    this.playerOneController;
 
     this.cleanupCbs = [];
   }
@@ -37,34 +39,26 @@ class Pong {
   }
 
   initialize() {
-    this.leftPaddle = new PongPaddle(
-      {
-        y: window
-          .getComputedStyle(document.getElementById("pong__left"))
-          .getPropertyValue("--y"),
-      },
-      document.getElementById("pong__left")
-    );
+    this.leftPaddle = new PongPaddle(document.getElementById("pong__left"));
 
-    this.rightPaddle = new PongPaddle(
-      {
-        y: window
-          .getComputedStyle(document.getElementById("pong__right"))
-          .getPropertyValue("--y"),
-      },
-      document.getElementById("pong__right")
-    );
+    this.rightPaddle = new PongPaddle(document.getElementById("pong__right"));
     console.log(this);
+
+    this.playerOneController = new PongPaddleController(this.leftPaddle);
 
     // register player controller
     this.cleanupCbs.push(
       new PlayerInputController("itsamee", {
-        w: () => this.leftPaddle.move.up("hiitme"),
-        s: () => this.leftPaddle.move.down("hiitme"),
+        w: () => this.playerOneController.movePaddleUp(),
+        s: () => this.playerOneController.movePaddleDown(),
       })
     );
 
-    this.tick(0);
+    window.requestAnimationFrame((time) => {
+      if (!this.lastTick) this.lastTick = time;
+      this.tick(time - this.lastTick);
+      this.lastTick = time;
+    });
   }
 
   tick(delta) {
@@ -73,6 +67,7 @@ class Pong {
       this.cleanupCbs.forEach((cb) => cb());
       return;
     }
+    this.playerOneController.movePaddle(delta);
 
     window.requestAnimationFrame((time) => {
       this.tick(time - this.lastTick);
@@ -82,19 +77,46 @@ class Pong {
 }
 
 class PongPaddle {
-  constructor(pos, elm, speed = 1) {
-    this._pos = pos;
+  constructor(elm, speed = 1) {
+    this._pos = {
+      y: window
+        .getComputedStyle(document.getElementById(elm.id))
+        .getPropertyValue("--y"),
+    };
     this._element = elm;
     this.speed = speed;
     this.move = {
       up: (...theArgs) => this.#moveUp(...theArgs),
       down: (...theArgs) => this.#moveDown(...theArgs),
     };
+
+    console.log(this);
   }
 
-  #moveUp(delta) {}
+  #moveUp(delta) {
+    console.log(delta, "up");
+  }
   #moveDown(delta) {
-    console.log(delta);
+    console.log(delta, "down");
+  }
+}
+
+class PongPaddleController {
+  constructor(paddle) {
+    this._paddle = paddle;
+    this.moveDirection = "";
+  }
+  movePaddleUp() {
+    this.moveDirection = "up";
+  }
+  movePaddleDown() {
+    this.moveDirection = "down";
+  }
+
+  movePaddle(delta) {
+    if (this.moveDirection === "up") this._paddle.move.up(delta);
+    if (this.moveDirection === "down") this._paddle.move.down(delta);
+    this.moveDirection = "";
   }
 }
 
