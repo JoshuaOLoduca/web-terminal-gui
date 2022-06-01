@@ -2,6 +2,7 @@ class Pong {
   constructor() {
     this.leftPaddle;
     this.rightPaddle;
+    this.ball;
     this._lastTick;
     this._exit = false;
     this.containerElement;
@@ -44,6 +45,8 @@ class Pong {
     this.rightPaddle = new PongPaddle(document.getElementById("pong__right"));
     console.log(this);
 
+    this.ball = new PongBall(document.getElementById("pong__ball"));
+
     this.playerOneController = new PongPaddleController(this.leftPaddle);
 
     // register player controller
@@ -76,15 +79,66 @@ class Pong {
   }
 }
 
-class PongPaddle {
-  constructor(elm, speed = 1) {
+class HtmlElement {
+  constructor(element) {
+    this._element = element;
+    this._$Elm = $(element);
+    this.Cords = {
+      y: this.#y,
+      x: this.#x,
+    };
+    this.size = {
+      width: this.#width,
+      height: this.#height,
+    };
+
+    console.log(this);
+  }
+
+  set #width(newWidth) {
+    this._$Elm.outerWidth(newWidth);
+  }
+  get #width() {
+    return this._$Elm.outerWidth();
+  }
+
+  set #height(newHeight) {
+    this._$Elm.outerHeight(newHeight);
+  }
+  get #height() {
+    return this._$Elm.outerHeight();
+  }
+
+  set #y(newY) {
+    return this._$Elm.offset({ top: newY });
+  }
+  get #y() {
+    return this._$Elm.position().left;
+  }
+
+  set #x(newX) {
+    return this._$Elm.offset({ left: newX });
+  }
+  get #x() {
+    return this._$Elm.position().top;
+  }
+}
+
+class PongElement extends HtmlElement {
+  constructor(element, speed = 1) {
+    super(element);
     this._pos = {
+      ...this._pos,
       y: window
-        .getComputedStyle(document.getElementById(elm.id))
+        .getComputedStyle(document.getElementById(element.id))
         .getPropertyValue("--y"),
     };
-    this._element = elm;
     this.speed = speed;
+  }
+}
+class PongPaddle extends PongElement {
+  constructor(elm, speed = 1) {
+    super(elm, speed);
     this.move = {
       up: (...theArgs) => this.#moveUp(...theArgs),
       down: (...theArgs) => this.#moveDown(...theArgs),
@@ -117,6 +171,18 @@ class PongPaddleController {
     if (this.moveDirection === "up") this._paddle.move.up(delta);
     if (this.moveDirection === "down") this._paddle.move.down(delta);
     this.moveDirection = "";
+  }
+}
+
+class PongBall extends PongElement {
+  constructor(element, speed) {
+    super(element, speed);
+    this._pos = {
+      ...this._pos,
+      x: window
+        .getComputedStyle(document.getElementById(element.id))
+        .getPropertyValue("--x"),
+    };
   }
 }
 
