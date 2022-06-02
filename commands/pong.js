@@ -81,9 +81,9 @@ class Pong {
 
 class HtmlElement {
   constructor(element) {
-    this._element = element;
-    this._$Elm = $(element);
-    this.Cords = {
+    this.element = element;
+    this.$Elm = $(element);
+    this.cords = {
       y: this.#y,
       x: this.#x,
     };
@@ -96,62 +96,75 @@ class HtmlElement {
   }
 
   set #width(newWidth) {
-    this._$Elm.outerWidth(newWidth);
+    this.$Elm.outerWidth(newWidth);
   }
   get #width() {
-    return this._$Elm.outerWidth();
+    return this.$Elm.outerWidth();
   }
 
   set #height(newHeight) {
-    this._$Elm.outerHeight(newHeight);
+    this.$Elm.outerHeight(newHeight);
   }
   get #height() {
-    return this._$Elm.outerHeight();
+    return this.$Elm.outerHeight();
   }
 
   set #y(newY) {
-    return this._$Elm.offset({ top: newY });
+    this.$Elm.offset({ top: newY });
   }
   get #y() {
-    return this._$Elm.position().left;
+    return this.$Elm.position().top;
   }
 
   set #x(newX) {
-    return this._$Elm.offset({ left: newX });
+    this.$Elm.offset({ left: newX });
   }
   get #x() {
-    return this._$Elm.position().top;
+    return this.$Elm.position().left;
   }
 }
 
 class PongElement extends HtmlElement {
-  constructor(element, speed = 1) {
+  constructor(element, speed = 0.1) {
     super(element);
+    this.posSuffix = window
+      .getComputedStyle(document.getElementById(element.id))
+      .getPropertyValue("--y")
+      .replace(/\s+|\b([0-9]|[1-9][0-9]|100)\b/g, "");
     this._pos = {
       ...this._pos,
-      y: window
-        .getComputedStyle(document.getElementById(element.id))
-        .getPropertyValue("--y"),
+      y: Number(
+        window
+          .getComputedStyle(document.getElementById(this.element.id))
+          .getPropertyValue("--y")
+          .replace(/\D+/g, "")
+      ),
     };
     this.speed = speed;
-  }
-}
-class PongPaddle extends PongElement {
-  constructor(elm, speed = 1) {
-    super(elm, speed);
     this.move = {
       up: (...theArgs) => this.#moveUp(...theArgs),
       down: (...theArgs) => this.#moveDown(...theArgs),
     };
-
-    console.log(this);
   }
 
   #moveUp(delta) {
-    console.log(delta, "up");
+    this._pos.y = this._pos.y - delta * this.speed;
+    document
+      .getElementById(this.element.id)
+      .style.setProperty("--y", this._pos.y + this.posSuffix);
   }
   #moveDown(delta) {
-    console.log(delta, "down");
+    this._pos.y = this._pos.y + delta * this.speed;
+    document
+      .getElementById(this.element.id)
+      .style.setProperty("--y", this._pos.y + this.posSuffix);
+  }
+}
+class PongPaddle extends PongElement {
+  constructor(elm) {
+    super(elm);
+
+    console.log(this);
   }
 }
 
