@@ -6,6 +6,7 @@ class Pong {
     this._lastTick;
     this._exit = false;
     this.containerElement;
+    this.collisionManager;
 
     this.playerOneController;
 
@@ -49,6 +50,12 @@ class Pong {
 
     this.playerOneController = new PongPaddleController(this.leftPaddle);
 
+    this.collisionManager = new HtmlCollisionManager([
+      this.leftPaddle,
+      this.rightPaddle,
+      this.ball,
+    ]);
+
     // register player controller
     this.cleanupCbs.push(
       new PlayerInputController("itsamee", {
@@ -71,11 +78,52 @@ class Pong {
       return;
     }
     this.playerOneController.movePaddle(delta);
+    const collisions = this.collisionManager.getCollisons();
+
+    // console.log(collisions);
 
     window.requestAnimationFrame((time) => {
       this.tick(time - this.lastTick);
       this.lastTick = time;
     });
+  }
+}
+
+class HtmlCollisionManager {
+  constructor(elementList) {
+    this.elements = elementList;
+    this._collisionsObjectTemplate = this.elements.reduce((a, b) => {
+      return {
+        ...a,
+        [b.element.id]: [],
+      };
+    }, {});
+  }
+
+  getCollisons() {
+    const collisions = this._collisionsObjectTemplate;
+    for (let i = 0; i < this.elements.length; i++) {
+      const element1 = this.elements[i];
+      for (let j = i + 1; j < this.elements.length; j++) {
+        const element2 = this.elements[j];
+
+        if (this.#checkCollision(element1, element2)) {
+          collisions[element1].push(element2);
+          collisions[element2].push(element1);
+        }
+      }
+    }
+
+    return collisions;
+  }
+
+  #checkCollision(element1, element2) {
+    return (
+      element1.cords().x < element2.cords().x + element2.size().width &&
+      element1.cords().x + element1.size().width > element2.cords().x &&
+      element1.cords().y < element2.cords().y + element2.size().height &&
+      element1.size().height + element1.cords().y > element2.cords().y
+    );
   }
 }
 
