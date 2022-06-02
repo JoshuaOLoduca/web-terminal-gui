@@ -83,14 +83,16 @@ class HtmlElement {
   constructor(element) {
     this.element = element;
     this.$Elm = $(element);
-    this.cords = {
-      y: this.#y,
-      x: this.#x,
+    this.cords = () => {
+      return {
+        y: this.#y,
+        x: this.#x,
+      };
     };
-    this.size = {
-      width: this.#width,
-      height: this.#height,
+    this.size = () => {
+      return { width: this.#width, height: this.#height };
     };
+    this.test = this.#y;
 
     console.log(this);
   }
