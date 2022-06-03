@@ -72,17 +72,31 @@ class Pong {
   }
 
   tick(delta) {
-    if (this._exit || $("#" + this.containerElement[0].id).length === 0) {
+    const {
+      ball,
+      leftPaddle,
+      rightPaddle,
+      playerOneController,
+      collisionManager,
+      containerElement,
+      cleanupCbs,
+    } = this;
+
+    if (this._exit || $("#" + containerElement[0].id).length === 0) {
       this._exit = false;
-      this.cleanupCbs.forEach((cb) => cb());
+      cleanupCbs.forEach((cb) => cb());
       return;
     }
-    this.playerOneController.movePaddle(delta);
-    const collisions = this.collisionManager.getCollisons();
+    playerOneController.movePaddle(delta);
+    const collisions = collisionManager.getCollisons();
 
-    this.ball.tickMove(delta);
+    ball.tickMove(delta);
 
-    // console.log(collisions);
+    if (collisions[ball].length > 0) {
+      ball.bounce.sides();
+      ball.tickMove(delta);
+      ball.tickMove(delta);
+    }
 
     window.requestAnimationFrame((time) => {
       this.tick(time - this.lastTick);
@@ -97,13 +111,16 @@ class HtmlCollisionManager {
     this._collisionsObjectTemplate = this.elements.reduce((a, b) => {
       return {
         ...a,
-        [b.element.id]: [],
+        [b]: [],
       };
     }, {});
   }
 
   getCollisons() {
-    const collisions = this._collisionsObjectTemplate;
+    const collisions = JSON.parse(
+      JSON.stringify(this._collisionsObjectTemplate)
+    );
+    console.log(collisions);
     for (let i = 0; i < this.elements.length; i++) {
       const element1 = this.elements[i];
       for (let j = i + 1; j < this.elements.length; j++) {
@@ -253,10 +270,16 @@ class PongBall extends PongElement {
           .replace(/\D+/g, "")
       ),
     };
+
     this.move = {
       ...this.move,
       left: (...theArgs) => this.#moveLeft(...theArgs),
       right: (...theArgs) => this.#moveRight(...theArgs),
+    };
+
+    this.bounce = {
+      top: (...theArgs) => this.#bounceTop(...theArgs),
+      sides: (...theArgs) => this.#bounceSide(...theArgs),
     };
 
     this.direction = {
@@ -274,15 +297,23 @@ class PongBall extends PongElement {
   tickMove(delta) {
     if (this.direction.y === this.#DIRECTION.y.up) this.move.up(delta);
     else this.move.down(delta);
+
     if (this.direction.x === this.#DIRECTION.x.left) this.move.left(delta);
     else this.move.right(delta);
   }
 
-  bounce() {
-    this.direction =
-      this.direction === this.#DIRECTION.left
-        ? this.#DIRECTION.right
-        : this.#DIRECTION.left;
+  #bounceTop() {
+    this.direction.y =
+      this.direction.y === this.#DIRECTION.y.up
+        ? this.#DIRECTION.y.down
+        : this.#DIRECTION.y.up;
+  }
+
+  #bounceSide() {
+    this.direction.x =
+      this.direction.x === this.#DIRECTION.x.left
+        ? this.#DIRECTION.x.right
+        : this.#DIRECTION.x.left;
   }
 
   setPos(newX, newY) {}
