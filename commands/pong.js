@@ -9,6 +9,7 @@ class Pong {
     this.collisionManager;
 
     this.playerOneController;
+    this.playerTwoController;
 
     this.cleanupCbs = [];
   }
@@ -49,6 +50,10 @@ class Pong {
     this.ball = new PongBall(document.getElementById("pong__ball"));
 
     this.playerOneController = new PongPaddleController(this.leftPaddle);
+    this.playerTwoController = new PongPaddleAIInputController(
+      this.rightPaddle,
+      this.ball
+    );
 
     this.collisionManager = new HtmlCollisionManager([
       this.leftPaddle,
@@ -77,6 +82,7 @@ class Pong {
       leftPaddle,
       rightPaddle,
       playerOneController,
+      playerTwoController,
       collisionManager,
       containerElement,
       cleanupCbs,
@@ -88,6 +94,7 @@ class Pong {
       return;
     }
     playerOneController.movePaddle(delta);
+    playerTwoController.movePaddle(delta);
     const collisions = collisionManager.getCollisons();
 
     ball.tickMove(delta);
@@ -411,5 +418,24 @@ class PlayerInputController {
   cleanup() {
     console.log("cleaning up", this.player, "paddle controls");
     $(window).off("." + this.nameSpace);
+  }
+}
+
+class PongPaddleAIInputController {
+  constructor(paddle, ball, deadzone) {
+    this.paddle = paddle;
+    this.ball = ball;
+    this.deadzone = deadzone || this.ball.size().height;
+  }
+
+  movePaddle(delta) {
+    const middleOfPaddle =
+      this.paddle.cords().y + this.paddle.size().height / 2;
+    const middleOfBall = this.ball.cords().y + this.ball.size().height / 2;
+
+    if (middleOfPaddle > middleOfBall + this.deadzone)
+      this.paddle.move.up(delta);
+    else if (middleOfPaddle < middleOfBall - this.deadzone)
+      this.paddle.move.down(delta);
   }
 }
