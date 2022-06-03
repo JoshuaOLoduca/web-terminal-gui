@@ -1,5 +1,5 @@
 class Pong {
-  constructor() {
+  constructor(player1Name = "human", player2Name = "ai") {
     this.leftPaddle;
     this.rightPaddle;
     this.ball;
@@ -7,6 +7,10 @@ class Pong {
     this._exit = false;
     this.containerElement;
     this.collisionManager;
+    this.scoreManager;
+
+    this.playerOneName = player1Name;
+    this.playerTwoName = player2Name;
 
     this.playerOneController;
     this.playerTwoController;
@@ -43,10 +47,7 @@ class Pong {
 
   initialize() {
     this.leftPaddle = new PongPaddle(document.getElementById("pong__left"));
-
     this.rightPaddle = new PongPaddle(document.getElementById("pong__right"));
-    console.log(this);
-
     this.ball = new PongBall(document.getElementById("pong__ball"));
 
     this.playerOneController = new PongPaddleController(this.leftPaddle);
@@ -54,6 +55,17 @@ class Pong {
       this.rightPaddle,
       this.ball
     );
+
+    this.scoreManager = new PongScoreboard([
+      [
+        this.playerOneName,
+        new HtmlElement(document.getElementById("pong__scoreboard__left")),
+      ],
+      [
+        this.playerTwoName,
+        new HtmlElement(document.getElementById("pong__scoreboard__right")),
+      ],
+    ]);
 
     this.collisionManager = new HtmlCollisionManager([
       this.leftPaddle,
@@ -69,6 +81,7 @@ class Pong {
       })
     );
 
+    console.log(this);
     window.requestAnimationFrame((time) => {
       if (!this.lastTick) this.lastTick = time;
       this.tick(time - this.lastTick);
@@ -130,6 +143,9 @@ class Pong {
 
     // When ball is scored
     if (ball._pos.x > 100 || ball._pos.x < 0) {
+      if (ball._pos.x > 100)
+        this.scoreManager.increaseScore(this.playerOneName);
+      else this.scoreManager.increaseScore(this.playerTwoName);
       ball.reset(50, ball._pos.y);
     }
 
@@ -437,5 +453,22 @@ class PongPaddleAIInputController {
       this.paddle.move.up(delta);
     else if (middleOfPaddle < middleOfBall - this.deadzone)
       this.paddle.move.down(delta);
+  }
+}
+
+class PongScoreboard {
+  // playersWithScoreboard = [[player1, player1ScoreBoardElement]]
+  constructor(playersWithScoreboard) {
+    for (const playerBoard of playersWithScoreboard) {
+      const [player, scoreBoard] = playerBoard;
+
+      this[player] = scoreBoard;
+    }
+  }
+
+  increaseScore(player, points = 1) {
+    console.log(this[player], this);
+    this[player].element.innerHTML =
+      Number(this[player].element.innerHTML) + points;
   }
 }
