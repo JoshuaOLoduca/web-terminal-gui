@@ -75,7 +75,7 @@ class Pong {
 
     // register player controller
     this.cleanupCbs.push(
-      new PlayerInputController("itsamee", {
+      new PlayerInputController(this.playerOneName, {
         w: () => this.playerOneController.movePaddleUp(),
         s: () => this.playerOneController.movePaddleDown(),
         clear: () => this.playerOneController.clearInput(),
@@ -103,16 +103,19 @@ class Pong {
       cleanupCbs,
     } = this;
 
+    // Exit Cleanup Code
     if (this._exit || $("#" + containerElement[0].id).length === 0) {
       this._exit = false;
       cleanupCbs.forEach((cb) => cb());
       return;
     }
+
+    // Move Pong Elements on Tick
     playerOneController.movePaddle(delta);
     playerTwoController.movePaddle(delta);
-    const collisions = collisionManager.getCollisons();
-
     ball.tickMove(delta);
+
+    const collisions = collisionManager.getCollisons();
 
     // Ball Collision Management
     if (collisions[ball].length > 0) {
@@ -136,6 +139,7 @@ class Pong {
       ball.increaseSpeed();
     }
 
+    // bounce ball to inbounds when vertically out of bounds
     if (
       (ball._pos.y > 100 &&
         ball.direction.y === ball.getDirectionEnums().y.down) ||
@@ -143,7 +147,7 @@ class Pong {
     )
       ball.bounce.top();
 
-    // When ball is scored
+    // Score Management
     if (ball._pos.x > 100 || ball._pos.x < 0) {
       if (ball._pos.x > 100)
         this.scoreManager.increaseScore(this.playerOneName);
