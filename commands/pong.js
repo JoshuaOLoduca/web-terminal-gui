@@ -78,6 +78,8 @@ class Pong {
       new PlayerInputController("itsamee", {
         w: () => this.playerOneController.movePaddleUp(),
         s: () => this.playerOneController.movePaddleDown(),
+        clear: () => this.playerOneController.clearInput(),
+        getCurrentInput: () => this.playerOneController.getInput(),
       })
     );
 
@@ -296,17 +298,22 @@ class PongPaddleController {
     this._paddle = paddle;
     this.moveDirection = "";
   }
+
   movePaddleUp() {
     this.moveDirection = "up";
   }
+
   movePaddleDown() {
     this.moveDirection = "down";
+  }
+
+  clearInput() {
+    this.moveDirection = "";
   }
 
   movePaddle(delta) {
     if (this.moveDirection === "up") this._paddle.move.up(delta);
     if (this.moveDirection === "down") this._paddle.move.down(delta);
-    this.moveDirection = "";
   }
 }
 
@@ -418,10 +425,15 @@ class PlayerInputController {
       d: () => {
         console.log(this.player, "d");
       },
+      clear: () => {
+        console.log(this.player, "clearInput");
+      },
     }
   ) {
     this.player = playerName;
     this.controlsCbs = controlsObj;
+
+    this.keysDown = {};
 
     this.nameSpace = "PlayerInputController" + playerName;
     this.registerListener();
@@ -430,10 +442,20 @@ class PlayerInputController {
   }
 
   registerListener() {
-    console.log("hi");
+    console.log("Register Input Listener for ", this.player);
     $(window).on("keydown." + this.nameSpace, async (e) => {
       const { key } = e;
-      if (this.controlsCbs[key]) this.controlsCbs?.[key]();
+      if (!this.controlsCbs[key]) return;
+
+      this.controlsCbs?.[key]();
+      this.keysDown[key] = true;
+    });
+    $(window).on("keyup." + this.nameSpace, async (e) => {
+      const { key } = e;
+      if (!this.keysDown[key]) return;
+
+      this.controlsCbs?.clear();
+      delete this.keysDown[key];
     });
   }
 
@@ -466,9 +488,9 @@ class PongScoreboard {
   // playersWithScoreboard = [[player1, player1ScoreBoardElement]]
   constructor(playersWithScoreboard) {
     for (const playerBoard of playersWithScoreboard) {
-      const [player, scoreBoard] = playerBoard;
+      const [playerName, scoreBoardElm] = playerBoard;
 
-      this[player] = scoreBoard;
+      this[playerName] = scoreBoardElm;
     }
   }
 
