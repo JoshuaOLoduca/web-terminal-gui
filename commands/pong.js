@@ -80,6 +80,8 @@ class Pong {
     this.playerOneController.movePaddle(delta);
     const collisions = this.collisionManager.getCollisons();
 
+    this.ball.tickMove(delta);
+
     // console.log(collisions);
 
     window.requestAnimationFrame((time) => {
@@ -210,9 +212,10 @@ class PongElement extends HtmlElement {
       .style.setProperty("--y", this._pos.y + this.posSuffix);
   }
 }
+
 class PongPaddle extends PongElement {
-  constructor(elm) {
-    super(elm);
+  constructor(elm, speed) {
+    super(elm, speed);
 
     console.log(this);
   }
@@ -238,14 +241,63 @@ class PongPaddleController {
 }
 
 class PongBall extends PongElement {
-  constructor(element, speed) {
+  constructor(element, speed = 0.05) {
     super(element, speed);
+    this.speed = speed / 2;
     this._pos = {
       ...this._pos,
-      x: window
-        .getComputedStyle(document.getElementById(element.id))
-        .getPropertyValue("--x"),
+      x: Number(
+        window
+          .getComputedStyle(document.getElementById(element.id))
+          .getPropertyValue("--x")
+          .replace(/\D+/g, "")
+      ),
     };
+    this.move = {
+      ...this.move,
+      left: (...theArgs) => this.#moveLeft(...theArgs),
+      right: (...theArgs) => this.#moveRight(...theArgs),
+    };
+
+    this.direction = {
+      x:
+        Math.random() <= 0.5 ? this.#DIRECTION.x.left : this.#DIRECTION.x.right,
+      y: Math.random() <= 0.5 ? this.#DIRECTION.y.up : this.#DIRECTION.y.down,
+    };
+  }
+
+  #DIRECTION = {
+    x: { left: 1, right: 0 },
+    y: { up: 1, down: 0 },
+  };
+
+  tickMove(delta) {
+    if (this.direction.y === this.#DIRECTION.y.up) this.move.up(delta);
+    else this.move.down(delta);
+    if (this.direction.x === this.#DIRECTION.x.left) this.move.left(delta);
+    else this.move.right(delta);
+  }
+
+  bounce() {
+    this.direction =
+      this.direction === this.#DIRECTION.left
+        ? this.#DIRECTION.right
+        : this.#DIRECTION.left;
+  }
+
+  setPos(newX, newY) {}
+
+  #moveLeft(delta) {
+    this._pos.x = this._pos.x - delta * this.speed;
+    document
+      .getElementById(this.element.id)
+      .style.setProperty("--x", this._pos.x + this.posSuffix);
+  }
+  #moveRight(delta) {
+    this._pos.x = this._pos.x + delta * this.speed;
+    document
+      .getElementById(this.element.id)
+      .style.setProperty("--x", this._pos.x + this.posSuffix);
   }
 }
 
