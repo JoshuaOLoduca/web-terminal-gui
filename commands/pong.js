@@ -131,7 +131,7 @@ class Pong {
 
       ball.bounce.sides();
       ball.setPos(newX);
-      ball.tickMove(delta);
+      ball.increaseSpeed();
     }
 
     if (
@@ -311,9 +311,10 @@ class PongPaddleController {
 }
 
 class PongBall extends PongElement {
-  constructor(element, speed = 0.05) {
+  constructor(element, speed = 0.025) {
     super(element, speed);
-    this.speed = speed / 2;
+    this.baseSpeed = speed;
+    this.speed = speed;
     this._pos = {
       ...this._pos,
       x: Number(
@@ -359,6 +360,10 @@ class PongBall extends PongElement {
     else this.move.right(delta);
   }
 
+  increaseSpeed(increase = this.baseSpeed / 4) {
+    this.speed += increase;
+  }
+
   #bounceTop() {
     this.direction.y =
       this.direction.y === this.#DIRECTION.y.up
@@ -382,6 +387,7 @@ class PongBall extends PongElement {
 
   reset(newX = 50, newY = 50) {
     this.setPos(newX, newY);
+    this.speed = this.baseSpeed;
     if (Math.random() >= 0.5) this.bounce.top();
     if (Math.random() >= 0.5) this.bounce.sides();
   }
