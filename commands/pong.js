@@ -283,9 +283,29 @@ class PongElement extends HtmlElement {
   }
 
   setPosOnAxis(posNum, posAxis) {
-    document
-      .getElementById(this.element.id)
-      .style.setProperty("--" + posAxis, posNum + this.posSuffix);
+    const smoothingSteps = 10;
+    const currentPos = Number(
+      window
+        .getComputedStyle(document.getElementById(this.element.id))
+        .getPropertyValue("--" + posAxis)
+        .replace(/[^\d.]/g, "")
+    );
+    const delta =
+      (currentPos > posNum ? currentPos - posNum : posNum - currentPos) /
+      smoothingSteps;
+    console.log(delta);
+
+    for (let i = 0; i < smoothingSteps; i++) {
+      document
+        .getElementById(this.element.id)
+        .style.setProperty(
+          "--" + posAxis,
+          (posNum > currentPos
+            ? currentPos + delta * i
+            : currentPos - delta * i) + this.posSuffix
+        );
+      // console.log("smooth");
+    }
   }
 }
 
