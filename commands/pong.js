@@ -92,9 +92,25 @@ class Pong {
 
     ball.tickMove(delta);
 
+    // Ball Collision Management
     if (collisions[ball].length > 0) {
+      let newX;
+      if (collisions[ball].includes(leftPaddle)) {
+        newX =
+          ((leftPaddle.cords().x +
+            leftPaddle.size().width +
+            ball.size().width / 6) /
+            window.innerWidth) *
+          100;
+      } else {
+        newX =
+          ((rightPaddle.cords().x - ball.size().width / 6) /
+            window.innerWidth) *
+          100;
+      }
+
       ball.bounce.sides();
-      ball.tickMove(delta);
+      ball.setPos(newX);
       ball.tickMove(delta);
     }
 
@@ -105,9 +121,9 @@ class Pong {
     )
       ball.bounce.top();
 
-    // For development
+    // When ball is scored
     if (ball._pos.x > 100 || ball._pos.x < 0) {
-      ball.reset();
+      ball.reset(50, ball._pos.y);
     }
 
     window.requestAnimationFrame((time) => {
@@ -172,7 +188,6 @@ class HtmlElement {
     this.size = () => {
       return { width: this.#width, height: this.#height };
     };
-    this.test = this.#y;
 
     console.log(this);
   }
@@ -195,14 +210,14 @@ class HtmlElement {
     this.$Elm.offset({ top: newY });
   }
   get #y() {
-    return this.$Elm.position().top;
+    return this.$Elm.offset().top;
   }
 
   set #x(newX) {
     this.$Elm.offset({ left: newX });
   }
   get #x() {
-    return this.$Elm.position().left;
+    return this.$Elm.offset().left;
   }
 }
 
@@ -335,7 +350,7 @@ class PongBall extends PongElement {
         : this.#DIRECTION.x.left;
   }
 
-  setPos(newX, newY) {
+  setPos(newX = this._pos.x, newY = this._pos.y) {
     this._pos.x = newX;
     this._pos.y = newY;
     this.setPosOnAxis(this._pos.x, "x");
