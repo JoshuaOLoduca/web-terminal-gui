@@ -98,6 +98,18 @@ class Pong {
       ball.tickMove(delta);
     }
 
+    if (
+      (ball._pos.y > 100 &&
+        ball.direction.y === ball.getDirectionEnums().y.down) ||
+      (ball._pos.y < 0 && ball.direction.y === ball.getDirectionEnums().y.up)
+    )
+      ball.bounce.top();
+
+    // For development
+    if (ball._pos.x > 100 || ball._pos.x < 0) {
+      ball.reset();
+    }
+
     window.requestAnimationFrame((time) => {
       this.tick(time - this.lastTick);
       this.lastTick = time;
@@ -117,10 +129,7 @@ class HtmlCollisionManager {
   }
 
   getCollisons() {
-    const collisions = JSON.parse(
-      JSON.stringify(this._collisionsObjectTemplate)
-    );
-    console.log(collisions);
+    const collisions = this.#getCollisionsObjectTemplate();
     for (let i = 0; i < this.elements.length; i++) {
       const element1 = this.elements[i];
       for (let j = i + 1; j < this.elements.length; j++) {
@@ -134,6 +143,10 @@ class HtmlCollisionManager {
     }
 
     return collisions;
+  }
+
+  #getCollisionsObjectTemplate() {
+    return JSON.parse(JSON.stringify(this._collisionsObjectTemplate));
   }
 
   #checkCollision(element1, element2) {
@@ -218,15 +231,17 @@ class PongElement extends HtmlElement {
 
   #moveUp(delta) {
     this._pos.y = this._pos.y - delta * this.speed;
-    document
-      .getElementById(this.element.id)
-      .style.setProperty("--y", this._pos.y + this.posSuffix);
+    this.setPosOnAxis(this._pos.y, "y");
   }
   #moveDown(delta) {
     this._pos.y = this._pos.y + delta * this.speed;
+    this.setPosOnAxis(this._pos.y, "y");
+  }
+
+  setPosOnAxis(posNum, posAxis) {
     document
       .getElementById(this.element.id)
-      .style.setProperty("--y", this._pos.y + this.posSuffix);
+      .style.setProperty("--" + posAxis, posNum + this.posSuffix);
   }
 }
 
@@ -294,6 +309,10 @@ class PongBall extends PongElement {
     y: { up: 1, down: 0 },
   };
 
+  getDirectionEnums() {
+    return this.#DIRECTION;
+  }
+
   tickMove(delta) {
     if (this.direction.y === this.#DIRECTION.y.up) this.move.up(delta);
     else this.move.down(delta);
@@ -316,19 +335,26 @@ class PongBall extends PongElement {
         : this.#DIRECTION.x.left;
   }
 
-  setPos(newX, newY) {}
+  setPos(newX, newY) {
+    this._pos.x = newX;
+    this._pos.y = newY;
+    this.setPosOnAxis(this._pos.x, "x");
+    this.setPosOnAxis(this._pos.y, "y");
+  }
+
+  reset(newX = 50, newY = 50) {
+    this.setPos(newX, newY);
+    if (Math.random() >= 0.5) this.bounce.top();
+    if (Math.random() >= 0.5) this.bounce.sides();
+  }
 
   #moveLeft(delta) {
     this._pos.x = this._pos.x - delta * this.speed;
-    document
-      .getElementById(this.element.id)
-      .style.setProperty("--x", this._pos.x + this.posSuffix);
+    this.setPosOnAxis(this._pos.x, "x");
   }
   #moveRight(delta) {
     this._pos.x = this._pos.x + delta * this.speed;
-    document
-      .getElementById(this.element.id)
-      .style.setProperty("--x", this._pos.x + this.posSuffix);
+    this.setPosOnAxis(this._pos.x, "x");
   }
 }
 
