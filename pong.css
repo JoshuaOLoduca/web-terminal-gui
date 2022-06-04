@@ -42,6 +42,20 @@
   text-align: right;
 }
 
+#pong__net {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -5%);
+
+  height: 100%;
+  width: 5vh;
+  background: repeating-linear-gradient(black,
+      black 10vh,
+      rgba(255, 255, 255, 0.762) 10vh,
+      rgba(255, 255, 255, 0.762) 20vh);
+}
+
 /* #pong__scoreboard__left {} */
 
 /* #pong__scoreboard__right {} */

@@ -28,6 +28,7 @@ class Pong {
             <div id='pong__scoreboard__left'>0</div>
             <div id='pong__scoreboard__right'>0</div>
           </div>
+          <div id='pong__net'> </div>
           <div class='pong__paddle' id='pong__left'> </div>
           <div id='pong__ball'> </div>
           <div class='pong__paddle' id='pong__right'> </div>
