@@ -88,6 +88,7 @@ class Pong {
     );
 
     console.log(this);
+    // starting game loop
     window.requestAnimationFrame((time) => {
       if (!this.lastTick) this.lastTick = time;
       this.tick(time - this.lastTick);
@@ -114,6 +115,7 @@ class Pong {
       return;
     }
 
+    // Non blocking pause clause
     if (this.pause)
       return setTimeout(() => {
         window.requestAnimationFrame((time) => {
@@ -132,6 +134,7 @@ class Pong {
     // Ball Collision Management
     if (collisions[ball].length > 0) {
       let newX;
+      // Create new ball pos so its flush with the paddle it collided with
       if (collisions[ball].includes(leftPaddle)) {
         newX =
           ((leftPaddle.cords().x +
@@ -169,6 +172,7 @@ class Pong {
       ball.reset(50, ball._pos.y);
     }
 
+    // keeps the game calculations going indefinitely
     window.requestAnimationFrame((time) => {
       this.tick(time - this.lastTick);
       this.lastTick = time;
@@ -189,6 +193,8 @@ class HtmlCollisionManager {
 
   getCollisons() {
     const collisions = this.#getCollisionsObjectTemplate();
+
+    // Checking collisions on every element, against every element in arr
     for (let i = 0; i < this.elements.length; i++) {
       const element1 = this.elements[i];
       for (let j = i + 1; j < this.elements.length; j++) {
@@ -222,12 +228,16 @@ class HtmlElement {
   constructor(element) {
     this.element = element;
     this.$Elm = $(element);
+
+    // A function so that the coords retrieved is always the most current
     this.cords = () => {
       return {
         y: this.#y,
         x: this.#x,
       };
     };
+
+    // A function so that the size retrieved is always the most current
     this.size = () => {
       return { width: this.#width, height: this.#height };
     };
@@ -267,11 +277,15 @@ class HtmlElement {
 class PongElement extends HtmlElement {
   constructor(element, speed = 0.1) {
     super(element);
+
+    // The css unit used for positioning (px, %, vh, etc...)
     this.posSuffix = window
       .getComputedStyle(document.getElementById(element.id))
       .getPropertyValue("--y")
       .replace(/\s+|\b([0-9]|[1-9][0-9]|100)\b/g, "");
+
     this._pos = {
+      // spread is for futureproofing
       ...this._pos,
       y: Number(
         window
@@ -288,6 +302,7 @@ class PongElement extends HtmlElement {
   }
 
   #moveUp(delta) {
+    // Keeps Element within the window
     if (
       this._pos.y +
         delta * this.speed -
@@ -295,10 +310,12 @@ class PongElement extends HtmlElement {
       0
     )
       return;
+
     this._pos.y = this._pos.y - delta * this.speed;
     this.setPosOnAxis(this._pos.y, "y");
   }
   #moveDown(delta) {
+    // Keeps Element within the window
     if (
       this._pos.y -
         delta * this.speed +
@@ -306,11 +323,13 @@ class PongElement extends HtmlElement {
       100
     )
       return;
+
     this._pos.y = this._pos.y + delta * this.speed;
     this.setPosOnAxis(this._pos.y, "y");
   }
 
   setPosOnAxis(posNum, posAxis) {
+    // How many steps to take to reach final position
     const smoothingSteps = 100;
     const currentPos = Number(
       window
@@ -318,21 +337,20 @@ class PongElement extends HtmlElement {
         .getPropertyValue("--" + posAxis)
         .replace(/[^\d.]/g, "")
     );
-    const delta =
+    const posDelta =
       (currentPos > posNum ? currentPos - posNum : posNum - currentPos) /
       smoothingSteps;
-    // console.log(delta);
 
+    // Smoothing out movement, Might need some form of delay to improve it
     for (let i = 0; i < smoothingSteps; i++) {
       document
         .getElementById(this.element.id)
         .style.setProperty(
           "--" + posAxis,
           (posNum > currentPos
-            ? currentPos + delta * i
-            : currentPos - delta * i) + this.posSuffix
+            ? currentPos + posDelta * i
+            : currentPos - posDelta * i) + this.posSuffix
         );
-      // console.log("smooth");
     }
   }
 }
@@ -340,8 +358,6 @@ class PongElement extends HtmlElement {
 class PongPaddle extends PongElement {
   constructor(elm, speed) {
     super(elm, speed);
-
-    console.log(this);
   }
 }
 
@@ -375,6 +391,7 @@ class PongBall extends PongElement {
     this.baseSpeed = speed;
     this.speed = speed;
     this._pos = {
+      // Maintaing y _pos key via spread
       ...this._pos,
       x: Number(
         window
@@ -385,16 +402,20 @@ class PongBall extends PongElement {
     };
 
     this.move = {
+      // maintaining move up/down via spread
       ...this.move,
       left: (...theArgs) => this.#moveLeft(...theArgs),
       right: (...theArgs) => this.#moveRight(...theArgs),
     };
 
     this.bounce = {
+      // Will flip the vertical direction of the ball
       top: (...theArgs) => this.#bounceTop(...theArgs),
+      // flips horizontal position
       sides: (...theArgs) => this.#bounceSide(...theArgs),
     };
 
+    // Randomly choose directions to start with
     this.direction = {
       x:
         Math.random() <= 0.5 ? this.#DIRECTION.x.left : this.#DIRECTION.x.right,
@@ -402,6 +423,7 @@ class PongBall extends PongElement {
     };
   }
 
+  // Private enums
   #DIRECTION = {
     x: { left: 1, right: 0 },
     y: { up: 1, down: 0 },
@@ -411,6 +433,7 @@ class PongBall extends PongElement {
     return this.#DIRECTION;
   }
 
+  // Call this every game tick to bring the ball alive
   tickMove(delta) {
     if (this.direction.y === this.#DIRECTION.y.up) this.move.up(delta);
     else this.move.down(delta);
@@ -423,6 +446,7 @@ class PongBall extends PongElement {
     this.speed += increase;
   }
 
+  // Flips Vertical Move Direction
   #bounceTop() {
     this.direction.y =
       this.direction.y === this.#DIRECTION.y.up
@@ -430,6 +454,7 @@ class PongBall extends PongElement {
         : this.#DIRECTION.y.up;
   }
 
+  // Flips Horizontal Move Direction
   #bounceSide() {
     this.direction.x =
       this.direction.x === this.#DIRECTION.x.left
@@ -447,6 +472,8 @@ class PongBall extends PongElement {
   reset(newX = 50, newY = 50) {
     this.setPos(newX, newY);
     this.speed = this.baseSpeed;
+
+    // randomly decide if we should switch ball directions
     if (Math.random() >= 0.5) this.bounce.top();
     if (Math.random() >= 0.5) this.bounce.sides();
   }
@@ -464,6 +491,8 @@ class PongBall extends PongElement {
 class PlayerInputController {
   constructor(
     playerName,
+
+    // key is keyboard key you want the callback associated with.
     controlsObj = {
       w: () => {
         console.log(this.player, "w");
@@ -477,6 +506,7 @@ class PlayerInputController {
       d: () => {
         console.log(this.player, "d");
       },
+      // clear is a callback to set input to null/undefined
       clear: () => {
         console.log(this.player, "clearInput");
       },
@@ -488,13 +518,17 @@ class PlayerInputController {
     this.keysDown = {};
 
     this.nameSpace = "PlayerInputController" + playerName;
+
+    // register input controller on initiation
     this.registerListener();
 
+    // return method to remove listeners
     return () => this.cleanup();
   }
 
   registerListener() {
     console.log("Register Input Listener for ", this.player);
+
     $(window).on("keydown." + this.nameSpace, async (e) => {
       const { key } = e;
       if (!this.controlsCbs[key]) return;
@@ -502,6 +536,7 @@ class PlayerInputController {
       this.controlsCbs?.[key]();
       this.keysDown[key] = true;
     });
+
     $(window).on("keyup." + this.nameSpace, async (e) => {
       const { key } = e;
       if (!this.keysDown[key]) return;
