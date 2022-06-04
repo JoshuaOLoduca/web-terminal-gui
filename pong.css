@@ -1,8 +1,14 @@
+@font-face {
+  font-family: silkSkreen;
+  src: url(slkscr.ttf);
+}
+
 #pong__container {
   position: relative;
   height: 100%;
   width: 100%;
   padding: 0 2%;
+  background-color: black;
 }
 
 #pong__table {
@@ -16,13 +22,20 @@
   display: flex;
   justify-content: center;
   width: 100%;
+  color: #fff;
 }
 
 #pong__scoreboard>* {
   flex-grow: 1;
   flex-basis: 0;
-  padding: 0 2%;
-  margin: 0 1%;
+  padding: 0 4%;
+  margin: 0 4%;
+
+  font-size: 2rem;
+
+  font-family: silkSkreen;
+  font-smooth: never;
+  -webkit-font-smoothing: none;
 }
 
 #pong__scoreboard> :first-child {
