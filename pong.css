@@ -99,9 +99,15 @@
   right: 0;
 }
 
-#pong_remove {
+#pong__remove {
   position: absolute;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 48%;
+  transform: translateX(-100%);
+}
+
+#pong__pause {
+  position: absolute;
+  bottom: 0;
+  left: 52%;
 }

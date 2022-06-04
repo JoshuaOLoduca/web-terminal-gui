@@ -5,6 +5,7 @@ class Pong {
     this.ball;
     this._lastTick;
     this._exit = false;
+    this.pause = false;
     this.containerElement;
     this.collisionManager;
     this.scoreManager;
@@ -33,15 +34,17 @@ class Pong {
           <div id='pong__ball'> </div>
           <div class='pong__paddle' id='pong__right'> </div>
         </div>
-        <button id="pong_remove">exit</button>
+        <button id="pong__remove">exit</button>
+        <button id="pong__pause">pause</button>
       </div>
       `
     );
-    $("#pong_remove").on("click", () => {
+    $("#pong__remove").on("click", () => {
       cleanupCb();
       $(element).remove();
       this._exit = true;
     });
+    $("#pong__pause").on("click", () => (this.pause = !this.pause));
 
     this.initialize();
   }
@@ -110,6 +113,14 @@ class Pong {
       cleanupCbs.forEach((cb) => cb());
       return;
     }
+
+    if (this.pause)
+      return setTimeout(() => {
+        window.requestAnimationFrame((time) => {
+          this.tick(0);
+          this.lastTick = time;
+        });
+      }, 5);
 
     // Move Pong Elements on Tick
     playerOneController.movePaddle(delta);
