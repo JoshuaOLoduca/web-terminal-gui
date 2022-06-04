@@ -142,15 +142,17 @@ class Pong {
 
     // bounce ball to inbounds when vertically out of bounds
     if (
-      (ball._pos.y > 100 &&
+      (ball._pos.y >=
+        100 - (ball.size().height / 2 / window.innerHeight) * 100 &&
         ball.direction.y === ball.getDirectionEnums().y.down) ||
-      (ball._pos.y < 0 && ball.direction.y === ball.getDirectionEnums().y.up)
+      (ball._pos.y <= 0 + (ball.size().height / 2 / window.innerHeight) * 100 &&
+        ball.direction.y === ball.getDirectionEnums().y.up)
     )
       ball.bounce.top();
 
     // Score Management
-    if (ball._pos.x > 100 || ball._pos.x < 0) {
-      if (ball._pos.x > 100)
+    if (ball._pos.x >= 100 || ball._pos.x <= 0) {
+      if (ball._pos.x >= 100)
         this.scoreManager.increaseScore(this.playerOneName);
       else this.scoreManager.increaseScore(this.playerTwoName);
       ball.reset(50, ball._pos.y);
@@ -275,10 +277,24 @@ class PongElement extends HtmlElement {
   }
 
   #moveUp(delta) {
+    if (
+      this._pos.y +
+        delta * this.speed -
+        (this.size().height / 2 / window.innerHeight) * 100 <=
+      0
+    )
+      return;
     this._pos.y = this._pos.y - delta * this.speed;
     this.setPosOnAxis(this._pos.y, "y");
   }
   #moveDown(delta) {
+    if (
+      this._pos.y -
+        delta * this.speed +
+        (this.size().height / 2 / window.innerHeight) * 100 >=
+      100
+    )
+      return;
     this._pos.y = this._pos.y + delta * this.speed;
     this.setPosOnAxis(this._pos.y, "y");
   }
@@ -294,7 +310,7 @@ class PongElement extends HtmlElement {
     const delta =
       (currentPos > posNum ? currentPos - posNum : posNum - currentPos) /
       smoothingSteps;
-    console.log(delta);
+    // console.log(delta);
 
     for (let i = 0; i < smoothingSteps; i++) {
       document
