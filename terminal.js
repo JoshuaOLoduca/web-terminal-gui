@@ -8,8 +8,6 @@ let ctrlMod = false;
 let ctrlCommand = [];
 let disableInput = false;
 
-const resetCursor = resetCursorFactory();
-
 const commands = {
   calc: (input) => calc.calculate(input),
   help: () =>
@@ -23,6 +21,8 @@ const commands = {
       pong.render(...myArgs);
     }),
 };
+
+const resetCursor = resetCursorFactory();
 
 function renderFullscreenApp(appName, appRenderCb) {
   disableInput = true;
@@ -62,8 +62,6 @@ function fireSpecialKey(key) {
   if (disableInput && key !== "Control") return;
   specialKeys[key]();
 }
-
-registerTerminalListeners();
 
 function registerTerminalListeners() {
   $(window).keydown(async (e) => {
@@ -108,7 +106,8 @@ function resetCursorFactory() {
   };
 }
 
-function sendInput() {
+function sendInput(command) {
+  if (command) input = command;
   const inputArr = input.split(" ");
   const prog = inputArr[0];
   const myArgs = inputArr.slice(1);
@@ -181,3 +180,6 @@ async function ctrlController(key) {
       break;
   }
 }
+
+registerTerminalListeners();
+// sendInput("help");
