@@ -41,8 +41,8 @@
   top: var(--y);
   left: var(--x);
   transform: translate(-50%, -50%);
-  width: 10vh;
-  height: 10vh;
+  width: 8vh;
+  height: 8vh;
 
   /* border-radius: 50%; */
 

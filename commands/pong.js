@@ -124,12 +124,12 @@ class Pong {
         newX =
           ((leftPaddle.cords().x +
             leftPaddle.size().width +
-            ball.size().width / 6) /
+            ball.size().width / 2) /
             window.innerWidth) *
           100;
       } else {
         newX =
-          ((rightPaddle.cords().x - ball.size().width / 6) /
+          ((rightPaddle.cords().x - ball.size().width / 2) /
             window.innerWidth) *
           100;
       }
@@ -283,7 +283,7 @@ class PongElement extends HtmlElement {
   }
 
   setPosOnAxis(posNum, posAxis) {
-    const smoothingSteps = 10;
+    const smoothingSteps = 100;
     const currentPos = Number(
       window
         .getComputedStyle(document.getElementById(this.element.id))
