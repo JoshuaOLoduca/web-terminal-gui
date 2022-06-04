@@ -49,11 +49,11 @@
   transform: translate(-50%, -5%);
 
   height: 100%;
-  width: 5vh;
+  width: 2.5vh;
   background: repeating-linear-gradient(rgba(0, 0, 0, 0),
       rgba(0, 0, 0, 0) 10vh,
-      rgba(255, 255, 255, 0.762) 10vh,
-      rgba(255, 255, 255, 0.762) 20vh);
+      rgb(255, 255, 255) 10vh,
+      rgb(255, 255, 255) 20vh);
 }
 
 /* #pong__scoreboard__left {} */
@@ -73,14 +73,14 @@
 
   /* border-radius: 50%; */
 
-  background-color: azure;
+  background-color: #ffffff;
 }
 
 .pong__paddle {
   position: absolute;
   width: 5vh;
   height: 25vh;
-  background-color: azure;
+  background-color: #ffffff;
 }
 
 #pong__left {
